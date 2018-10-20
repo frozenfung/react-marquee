@@ -10,8 +10,8 @@ class Marquee extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      animatedWidth: 0,
-      overflowWidth: 0
+      animatedHeight: 0,
+      overflowHeight: 0
     }
 
     this.handleMouseEnter = this.handleMouseEnter.bind(this)
@@ -43,7 +43,7 @@ class Marquee extends Component {
           {
               clearTimeout(this._marqueeTimer);
               this.setState({
-                animatedWidth: 0
+                animatedHeight: 0
               });
           }
   }
@@ -52,19 +52,19 @@ class Marquee extends Component {
     if (this.props.hoverToStop) {
       clearTimeout(this._marqueeTimer);
     }
-    else if (this.state.overflowWidth > 0){
+    else if (this.state.overflowHeight > 0){
       this._startAnimation();
     }
   }
 
   handleMouseLeave() {
-    if (this.props.hoverToStop && this.state.overflowWidth > 0) {
+    if (this.props.hoverToStop && this.state.overflowHeight > 0) {
       this._startAnimation();
     }
     else {
       clearTimeout(this._marqueeTimer);
       this.setState({
-        animatedWidth: 0
+        animatedHeight: 0
       });
     }
   }
@@ -72,20 +72,20 @@ class Marquee extends Component {
   render() {
     const style = {
       'position': 'relative',
-      'right': this.state.animatedWidth,
-      'whiteSpace': 'nowrap'
+      'bottom': this.state.animatedHeight,
+      'font-size': '18px',
     };
 
-    if (this.state.overflowWidth < 0) {
+    if (this.state.overflowHeight < 0) {
       return (
-        <div className={`ui-marquee ${this.props.className}`} style={{overflow: 'hidden'}}>
+        <div className={`ui-marquee ${this.props.className}`} style={{overflow: 'hidden', height: '20px'}}>
           <span ref="text" style={style} title={this.props.text}>{this.props.text}</span>
         </div>
       );
     }
     else {
       return (
-        <div className={`ui-marquee ${this.props.className}`} style={{overflow: 'hidden'}}
+        <div className={`ui-marquee ${this.props.className}`} style={{overflow: 'hidden', height: '20px'}}
              onMouseEnter={this.handleMouseEnter}
              onMouseLeave={this.handleMouseLeave}>
           <span ref="text" style={style} title={this.props.text}>{this.props.text}</span>
@@ -96,17 +96,17 @@ class Marquee extends Component {
 
   _startAnimation() {
     clearTimeout(this._marqueeTimer);
-    const isLeading = this.state.animatedWidth === 0;
+    const isLeading = this.state.animatedHeight === 0;
     const timeout = isLeading ? this.props.leading : TIMEOUT;
 
     const animate = () => {
-      const {overflowWidth} = this.state;
-      let animatedWidth = this.state.animatedWidth + STEP;
-      const isRoundOver = animatedWidth > overflowWidth;
+      const {overflowHeight} = this.state;
+      let animatedHeight = this.state.animatedHeight + STEP;
+      const isRoundOver = animatedHeight > overflowHeight;
 
       if (isRoundOver) {
         if (this.props.loop) {
-          animatedWidth = 0;
+          animatedHeight = 0;
         }
         else {
           return;
@@ -116,7 +116,7 @@ class Marquee extends Component {
       if (isRoundOver && this.props.trailing) {
         this._marqueeTimer = setTimeout(() => {
           this.setState({
-            animatedWidth
+            animatedHeight
           });
 
           this._marqueeTimer = setTimeout(animate, TIMEOUT);
@@ -124,7 +124,7 @@ class Marquee extends Component {
       }
       else {
         this.setState({
-          animatedWidth
+          animatedHeight
         });
 
         this._marqueeTimer = setTimeout(animate, TIMEOUT);
@@ -139,13 +139,13 @@ class Marquee extends Component {
     const node = ReactDOM.findDOMNode(this.refs.text);
 
     if (container && node) {
-      const containerWidth = container.offsetWidth;
-      const textWidth = node.offsetWidth;
-      const overflowWidth = textWidth - containerWidth;
+      const containerHeight = container.offsetHeight;
+      const textHeight = node.offsetHeight;
+      const overflowHeight = textHeight - containerHeight;
 
-      if (overflowWidth !== this.state.overflowWidth) {
+      if (overflowHeight !== this.state.overflowHeight) {
         this.setState({
-          overflowWidth
+          overflowHeight
         });
       }
     }
@@ -153,7 +153,7 @@ class Marquee extends Component {
 }
 
 Marquee.defaultProps = {
-  text: '',
+  text: [],
   hoverToStop: false,
   loop: false,
   leading: 0,
@@ -161,7 +161,7 @@ Marquee.defaultProps = {
 }
 
 Marquee.propTypes = {
-  text: PropTypes.string,
+  text: PropTypes.array,
   hoverToStop: PropTypes.bool,
   loop: PropTypes.bool,
   leading: PropTypes.number,
